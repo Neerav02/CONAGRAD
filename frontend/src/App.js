@@ -1,53 +1,25 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import "./styles/App.css";
+import StudentAuth from "./components/studentAuth";
+import ExpertAuth from "./components/expertAuth";
+import ExpertDashboard from "./components/ExpertDashboard";
 import StudentDashboard from "./components/StudentDashboard";
-import AssignmentDetails from './components/AssignmentDetails';
+import AssignmentDetails from "./components/AssignmentDetails";
 import AssignmentHistory from "./components/AssignmentHistory";
 import Profile from "./components/Profile";
 import Settings from "./components/Settings";
 import Help from "./components/Help";
-import About from "./components/About";
-import Services from "./components/Services";
-import Contact from "./components/Contact";
-import StudentAuth from "./components/studentAuth";
-import ExpertAuth from "./components/expertAuth";
-import ExpertDashboard from "./components/ExpertPages/ExpertDashboard/ExpertDashboard";
-import YourWork from "./components/ExpertPages/YourWork/YourWork";
-import ExpertProfile from "./components/ExpertPages/ExpertProfile/ExpertProfile";
-import StudentUpload from "./components/StudentUpload";
-import AssignmentBids from './components/AssignmentBids';
+// Change this line at the top of your file
+import StudentUpload from "./components/StudentUpload";  // Remove the comment
+import YourWork from "./components/YourWork";
+import ExpertProfile from "./components/ExpertProfile";
+import "./styles/App.css";
+import Services from './components/Services';
+import About from './components/About';
+import Contact from './components/Contact';
 
-function App() {    
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/student-login" element={<StudentAuth />} />
-        <Route path="/expert-login" element={<ExpertAuth />} />
-        <Route path="/expert-dashboard" element={<ExpertDashboard />} />
-        <Route path="/expert-profile" element={<ExpertProfile />} />
-        <Route path="/your-work" element={<YourWork />} />
-        <Route path="/dashboard" element={<StudentDashboard />} />
-        <Route path="/assignment/:id" element={<AssignmentDetails />} />
-        <Route path="/assignments" element={<AssignmentHistory />} />
-        <Route path="/history" element={<AssignmentHistory />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/help" element={<Help />} />
-        <Route path="/student-upload" element={<StudentUpload />} />
-        {/* Fixed: Added proper JSX comment syntax */}
-        <Route path="/assignments/:id/bids" element={<AssignmentBids />} />
-      </Routes>
-    </Router>
-  );
-}
 
 // import PendingAssignments from "./components/pendingAssignment";
-// import Navbar from "./components/Navbar";
+// // import Navbar from "./components/Navbar";
 // import AssignedAssignments from "./components/AssignedAssignment";
 // import History from "./components/history";
 
@@ -55,15 +27,21 @@ function Home() {
   return (
     <div className="app">
       <header>
-        <Link to="/" className="logo">
-          <h1>CONAGRAD</h1>
-        </Link>
+        <div className="video-container">
+          <video autoPlay loop muted>
+            <source src="/Conagrad..mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div className="logo">
+          <img src="/Conagrad.jpg" alt="Platform Logo" />
+        </div>
         <nav>
           <ul>
             <li><Link to="/">Home</Link></li>
-            <li><Link to="/about">About</Link></li>
-            <li><Link to="/services">Services</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/services">Services</a></li>
+            <li><a href="/contact">Contact</a></li>
           </ul>
         </nav>
       </header>
@@ -89,4 +67,29 @@ function Home() {
   );
 }
 
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/student-login" element={<StudentAuth />} />
+        <Route path="/expert-login" element={<ExpertAuth />} />
+        <Route path="/expert-dashboard" element={<ExpertDashboard />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/student-upload" element={<StudentUpload />} />
+        <Route path="/your-work" element={<YourWork />} />
+        <Route path="/assignments" element={<AssignmentDetails />} />
+        <Route path="/dashboard" element={<StudentDashboard />} />
+        <Route path="/student-dashboard" element={<StudentDashboard />} />
+        <Route path="/assignment-details" element={<AssignmentDetails />} />
+        <Route path="/assignment-history" element={<AssignmentHistory />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/help" element={<Help />} />
+      </Routes>
+    </Router>
+  );
+}
 export default App;

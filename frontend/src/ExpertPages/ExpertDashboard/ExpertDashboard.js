@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../ExpertDashboard/ExpertDashboard.css";
-import ExpertNavbar from '../../ExpertNavbar/ExpertNavbar';
+import ExpertNavbar from "../../components/ExpertNavbar/ExpertNavbar.js";
+import AssignedAssignment from "../../components/Expert/AssignedAssignment/AssignedAssignment.js";
 
 const ExpertDashboard = () => {
   const [assignments, setAssignments] = useState([]);
@@ -146,6 +147,7 @@ const ExpertDashboard = () => {
   return (
     <div className="dashboard-container">
       <ExpertNavbar />
+      <AssignedAssignment/>
       <div className="dashboard-content">
         <div className="dashboard-header-row">
           <h2>Available Assignments</h2>
@@ -185,7 +187,7 @@ const ExpertDashboard = () => {
                       onClick={() => window.open(`http://localhost:4000${currentAssignment.fileUrl}`, '_blank')}
                     >
                       Download
-                    </button>
+                    </button> 
                   </div>
                 )}
               </div>

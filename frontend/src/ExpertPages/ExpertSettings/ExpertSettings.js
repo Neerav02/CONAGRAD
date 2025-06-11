@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './ExpertSettings.css';
-import ExpertNavbar from '../../ExpertNavbar/ExpertNavbar';
+import ExpertNavbar from "../../components/ExpertNavbar/ExpertNavbar.js";
 
 const ToggleSwitch = ({ checked, onChange, id }) => (
   <label className="toggle-switch">

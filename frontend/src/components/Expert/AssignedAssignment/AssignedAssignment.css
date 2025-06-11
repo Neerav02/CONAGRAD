@@ -1,0 +1,270 @@
+/* Keep original container and header styles */
+.assigned-container {
+    padding: 20px;
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding-top: 140px;
+}
+
+.assigned-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: rgba(173, 216, 230, 0.2);
+    padding: 10px 15px;
+    border-radius: 8px;
+    height: 60px; 
+}
+
+.assigned-header h1 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.2;
+}
+
+/* Enhanced card styling */
+.assigned-assignment-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e8f4f8;
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+.assigned-assignment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Assignment header with title and actions */
+.assignment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 20px;
+}
+
+.assignment-title-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex: 1;
+}
+
+.assignment-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3498db, #5271FF);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(82, 113, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.assignment-icon .icon {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.title-info h3 {
+    color: #2c3e50;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+}
+
+.student-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.user-icon {
+    width: 16px;
+    height: 16px;
+    color: #3498db;
+}
+
+/* Header actions - view button and status */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Unified styling for both view button and status badge */
+.view-button,
+.status-pending {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 80px;
+    height: 32px;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+/* View button specific styling */
+.view-button {
+    background: linear-gradient(135deg, #5271FF, #3498db);
+    color: white;
+    box-shadow: 0 2px 8px rgba(82, 113, 255, 0.3);
+}
+
+.view-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(82, 113, 255, 0.4);
+    background: linear-gradient(135deg, #4a67ff, #2980b9);
+}
+
+/* Status badge specific styling */
+.status-pending {
+    background: linear-gradient(135deg, #ff9a56, #ff6b35);
+    color: white;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    cursor: default;
+}
+
+.button-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* Assignment details */
+.assign-details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    background: #f0f8ff;
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid #d1e7f5;
+    transition: all 0.2s ease;
+}
+
+.detail-item:hover {
+    background: #f0f8ff;
+    border-color: #d1e7f5;
+}
+
+.description-item {
+    background: #f0f8ff;
+    border-color: #bfdbfe;
+}
+
+.due-date-item {
+    background: #f0f8ff;
+    border-color: #bfdbfe;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.detail-icon {
+    width: 20px;
+    height: 20px;
+    color: #3498db;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.detail-content h4 {
+    color: #2c3e50;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+}
+
+.detail-content p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.due-date-item .detail-content p {
+    color: #3498db;
+    font-weight: 600;
+}
+
+.time-remaining {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #fbbf24;
+    color: #d97706;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.clock-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .assignment-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+    
+    .header-actions {
+        align-self: flex-end;
+        justify-content: flex-end;
+    }
+    
+    .due-date-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .time-remaining {
+        align-self: flex-start;
+    }
+    
+    .assignment-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}

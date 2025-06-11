@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ExpertNavbar from '../../ExpertNavbar/ExpertNavbar';
+import ExpertNavbar from "../../components/ExpertNavbar/ExpertNavbar.js";
 import './ExpertHistory.css';
 
 const ExpertHistory = () => {
