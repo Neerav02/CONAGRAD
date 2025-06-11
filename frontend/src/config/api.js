@@ -11,7 +11,15 @@ export const API_ENDPOINTS = {
     // Bid endpoints
     GET_ASSIGNMENT_BIDS: (assignmentId) => `${BASE_URL}/student/assignments/${assignmentId}/bids`,
     ACCEPT_BID: (assignmentId, bidId) => `${BASE_URL}/student/assignments/${assignmentId}/accept-bid/${bidId}`,
-    REJECT_BID: (assignmentId, bidId) => `${BASE_URL}/student/assignments/${assignmentId}/reject-bid/${bidId}`
+    REJECT_BID: (assignmentId, bidId) => `${BASE_URL}/student/assignments/${assignmentId}/reject-bid/${bidId}`,
+    // Review endpoints
+    SUBMIT_REVIEW: `${BASE_URL}/reviews`,
+    GET_ASSIGNMENT_REVIEWS: (assignmentId) => `${BASE_URL}/reviews/assignment/${assignmentId}`,
+    GET_EXPERT_REVIEWS: (expertId) => `${BASE_URL}/reviews/expert/${expertId}`,
+    // Add the review submission endpoint
+    REVIEW_SUBMISSION: (assignmentId) => `${BASE_URL}/student/assignments/${assignmentId}/review`,
+    APPROVE_SUBMISSION: (assignmentId) => `${BASE_URL}/student/assignments/${assignmentId}/approve`,
+    REQUEST_REVISION: (assignmentId) => `${BASE_URL}/student/assignments/${assignmentId}/request-revision`,
 };
 
 export const getAuthHeader = () => {

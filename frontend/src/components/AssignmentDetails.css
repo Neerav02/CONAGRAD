@@ -532,3 +532,44 @@
     color: #dc3545;
     font-size: 18px;
 }
+
+/* Add these styles to the existing CSS file */
+
+.review-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.review-btn {
+  background: var(--accent-color, #f8c12c);
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.review-btn:hover {
+  background: var(--accent-color-hover, #e5b325);
+  transform: translateY(-2px);
+}
+
+.review-submitted {
+  text-align: center;
+  color: #28a745;
+  font-weight: 500;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  animation: fadeIn 0.5s ease-out;
+}

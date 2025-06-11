@@ -23,6 +23,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   animation: slideUp 0.5s ease-out;
+  overflow: visible;
 }
 
 .upload-card:hover {
@@ -266,10 +267,12 @@
   }
 }
 
-/* Subject selector styling */
+/* --- Improved Subject Selector Styling --- */
 .subject-selector {
   position: relative;
   width: 100%;
+  margin-bottom: 0.5rem;
+  z-index: 2;
 }
 
 .selected-subjects {
@@ -277,14 +280,15 @@
   flex-wrap: wrap;
   gap: 8px;
   padding: 0.5rem;
-  min-height: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.08);
   align-items: center;
+  transition: border-color 0.2s;
 }
 
+.selected-subjects:focus-within,
 .selected-subjects:hover {
   border-color: var(--primary-color, #4a90e2);
 }
@@ -292,90 +296,71 @@
 .subject-tag {
   display: flex;
   align-items: center;
-  background: rgba(74, 144, 226, 0.2);
+  background: rgba(74, 144, 226, 0.18);
   color: var(--text-color, white);
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 16px;
-  font-size: 0.9rem;
-  animation: fadeIn 0.3s ease-out;
-  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
 }
 
-.subject-tag:hover {
-  background: rgba(74, 144, 226, 0.3);
-}
-
-.remove-subject {
+.subject-tag .remove-subject {
+  margin-left: 6px;
+  color: #ff6b6b;
   background: none;
   border: none;
-  color: var(--text-color, white);
-  margin-left: 6px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px;
-  font-size: 0.8rem;
-  transition: all 0.3s ease;
-}
-
-.remove-subject:hover {
-  color: #ff6b6b;
-  transform: scale(1.2);
+  font-size: 1rem;
+  padding: 0 2px;
 }
 
 .subject-input {
   flex: 1;
-  min-width: 100px;
+  min-width: 120px;
   background: transparent;
   border: none;
   color: var(--text-color, white);
   padding: 4px;
-  cursor: pointer;
-}
-
-.subject-input:focus {
+  font-size: 1rem;
   outline: none;
+  cursor: pointer;
 }
 
 .subject-dropdown {
   position: absolute;
-  top: 100%;
+  top: 110%;
   left: 0;
   width: 100%;
-  max-height: 200px;
+  max-height: 220px;
   overflow-y: auto;
-  background: rgba(30, 30, 30, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #23272f;
+  border: 1px solid var(--primary-color, #4a90e2);
   border-radius: 8px;
-  margin-top: 5px;
-  z-index: 10;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.2s ease-out;
+  margin-top: 2px;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  animation: fadeIn 0.2s;
 }
 
 .subject-option {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
+  padding: 12px 18px;
   color: var(--text-color, white);
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 1rem;
+  transition: background 0.2s;
 }
 
 .subject-option:hover {
-  background: rgba(74, 144, 226, 0.2);
+  background: rgba(74, 144, 226, 0.18);
 }
 
 .add-subject {
   color: var(--primary-color, #4a90e2);
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
-
-.subject-option:hover .add-subject {
-  transform: scale(1.2);
+  font-size: 1.1rem;
+  margin-left: 8px;
 }
 
 /* Custom scrollbar for dropdown */

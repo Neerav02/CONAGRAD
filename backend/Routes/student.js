@@ -3,8 +3,21 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const Assignment = require('../Models/Assignment');
+const mongoose = require('mongoose');
+const { Assignment, ASSIGNMENT_STATUS } = require('../Models/Assignment');
 const authMiddleware = require('../middleware/auth');
+
+// Try to import Expert/User model, but handle gracefully if it doesn't exist
+let Expert = null;
+try {
+    Expert = require('../Models/Expert');
+} catch (err) {
+    try {
+        Expert = require('../Models/User');
+    } catch (err2) {
+        console.warn('[WARN] Expert/User model not found. Population will be skipped.');
+    }
+}
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, '..', 'uploads');
@@ -18,14 +31,18 @@ const storage = multer.diskStorage({
         cb(null, uploadsDir);
     },
     filename: function (req, file, cb) {
-        const uniqueName = Date.now() + '-' + file.originalname;
+        // Sanitize filename
+        const sanitizedFilename = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+        const uniqueName = Date.now() + '-' + sanitizedFilename;
         cb(null, uniqueName);
     }
 });
 
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    limits: { 
+        fileSize: 20 * 1024 * 1024 // 20MB limit
+    },
     fileFilter: (req, file, cb) => {
         const allowedTypes = [
             'application/pdf',
@@ -38,10 +55,23 @@ const upload = multer({
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
-            cb(new Error('Invalid file type'));
+            cb(new Error('Invalid file type. Only PDF, DOC, DOCX, PPT, and PPTX files are allowed.'));
         }
     }
 });
+
+// Error handling middleware for multer
+const handleMulterError = (err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ error: 'File size too large. Maximum size is 20MB.' });
+        }
+        return res.status(400).json({ error: err.message });
+    } else if (err) {
+        return res.status(400).json({ error: err.message });
+    }
+    next();
+};
 
 // GET /api/student/assignments - Get all assignments for a student
 router.get('/assignments', authMiddleware, async (req, res) => {
@@ -60,49 +90,74 @@ router.get('/assignments', authMiddleware, async (req, res) => {
     }
 });
 
-// FIXED: GET /api/student/assignments/:id - Get a specific assignment by ID (moved before bids routes)
+// GET /api/student/assignments/:id - Get a specific assignment by ID
 router.get('/assignments/:id', authMiddleware, async (req, res) => {
-    console.log('GET /assignments/:id route hit with ID:', req.params.id);
+    const assignmentId = req.params.id;
+    const userId = req.userId;
+    console.log(`[DEBUG] GET /assignments/:id called with ID: ${assignmentId} by user: ${userId}`);
+
     try {
-        // Remove this line
-        // const assignment = await Assignment.findById(req.params.id);
-        // console.log('Assignment found:', assignment ? 'Yes' : 'No');
-        
-        const assignment = await Assignment.findById(req.params.id).populate({
-            path: 'bids.expertId',
-            select: 'name username email'
-        });
-        
-        console.log('Assignment found:', assignment ? 'Yes' : 'No');
-        
-        if (!assignment) {
-            console.log('Assignment not found:', req.params.id);
-            return res.status(404).json({ error: 'Assignment not found' });
-        }
-        
-        // Verify that the assignment belongs to the authenticated student
-        if (assignment.studentId.toString() !== req.userId) {
-            console.log('Unauthorized access attempt:', {
-                assignmentStudent: assignment.studentId.toString(),
-                requestingUser: req.userId
-            });
-            return res.status(403).json({ error: 'You do not have permission to view this assignment' });
-        }
-        
-        console.log('Assignment found successfully:', assignment.title);
-        res.json(assignment);
-    } catch (error) {
-        console.error('Error fetching assignment:', error);
-        if (error.name === 'CastError') {
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(assignmentId)) {
+            console.warn(`[WARN] Invalid assignment ID format: ${assignmentId}`);
             return res.status(400).json({ error: 'Invalid assignment ID format' });
         }
-        console.error('Error in GET /assignments/:id:', error);
-        res.status(500).json({ error: 'Failed to fetch assignment details' });
+
+        // Find assignment first without population
+        const assignment = await Assignment.findById(assignmentId);
+        if (!assignment) {
+            console.warn(`[WARN] Assignment not found: ${assignmentId}`);
+            return res.status(404).json({ error: 'Assignment not found' });
+        }
+
+        // Check ownership
+        if (assignment.studentId.toString() !== userId) {
+            console.warn(`[WARN] Unauthorized access attempt. Assignment student: ${assignment.studentId}, Requesting user: ${userId}`);
+            return res.status(403).json({ error: 'You do not have permission to view this assignment' });
+        }
+
+        console.log(`[DEBUG] Assignment found: ${assignment.title}`);
+        
+        // If Expert model is available, try population
+        if (Expert) {
+            try {
+                const populatedAssignment = await Assignment.findById(assignmentId)
+                    .populate({
+                        path: 'expertId',
+                        select: 'name username email expertise',
+                        model: Expert
+                    })
+                    .populate({
+                        path: 'bids.expertId',
+                        select: 'name username email expertise',
+                        model: Expert
+                    });
+
+                if (populatedAssignment) {
+                    console.log(`[DEBUG] Assignment populated successfully`);
+                    return res.json(populatedAssignment);
+                }
+            } catch (populateError) {
+                console.warn(`[WARN] Population failed:`, populateError.message);
+                // Continue to return unpopulated assignment
+            }
+        }
+
+        // Return assignment without population
+        console.log(`[DEBUG] Returning assignment without population`);
+        return res.json(assignment);
+
+    } catch (error) {
+        console.error(`[ERROR] Error in GET /assignments/:id:`, error);
+        return res.status(500).json({
+            error: 'Failed to fetch assignment details',
+            message: error.message
+        });
     }
 });
 
 // POST /api/student/upload-assignment - Upload new assignment
-router.post('/upload-assignment', authMiddleware, upload.single('file'), async (req, res) => {
+router.post('/upload-assignment', authMiddleware, upload.single('file'), handleMulterError, async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: "No file uploaded" });
@@ -122,14 +177,14 @@ router.post('/upload-assignment', authMiddleware, upload.single('file'), async (
             description: description || '',
             subject: subject || 'General',
             studentId: req.userId,
-            fileUrl: `/uploads/${req.file.filename}`,
+            fileUrl: `/api/uploads/${req.file.filename}`,
             fileName: req.file.originalname,
             fileType: req.file.mimetype,
             fileSize: req.file.size,
             dueDate: dueDate ? new Date(dueDate) : new Date(),
-            status: 'pending',
+            status: ASSIGNMENT_STATUS.PENDING,
             submittedDate: new Date(),
-            bids: [] // Initialize empty bids array
+            bids: []
         });
 
         await newAssignment.save();
@@ -140,6 +195,16 @@ router.post('/upload-assignment', authMiddleware, upload.single('file'), async (
         });
     } catch (error) {
         console.error('Upload error details:', error);
+        
+        // If file was uploaded but database save failed, delete the file
+        if (req.file) {
+            try {
+                fs.unlinkSync(path.join(uploadsDir, req.file.filename));
+            } catch (unlinkError) {
+                console.error('Error deleting file after failed save:', unlinkError);
+            }
+        }
+        
         res.status(500).json({ 
             error: "Failed to upload assignment",
             details: error.message 
@@ -148,9 +213,9 @@ router.post('/upload-assignment', authMiddleware, upload.single('file'), async (
 });
 
 // GET /api/student/download/:filename - Download file
-router.get('/download/:filename', async (req, res) => {
+router.get('/download/:filename', authMiddleware, async (req, res) => {
     try {
-        const filename = req.params.filename;
+        const filename = decodeURIComponent(req.params.filename);
         const filePath = path.join(uploadsDir, filename);
         
         console.log('Download request for:', filename);
@@ -168,7 +233,7 @@ router.get('/download/:filename', async (req, res) => {
 
         // Set headers for download
         res.setHeader('Content-Type', 'application/octet-stream');
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(filename)}`);
         res.setHeader('Content-Length', fileSize);
 
         // Stream the file
@@ -197,13 +262,22 @@ router.get('/assignments/:id/bids', authMiddleware, async (req, res) => {
         console.log('Fetching bids for assignment:', assignmentId);
         
         // Verify the assignment belongs to this student
-        const assignment = await Assignment.findOne({
-            _id: assignmentId,
-            studentId: req.userId
-        }).populate({
-            path: 'bids.expertId',
-            select: 'name username email'
-        });
+        let assignment;
+        if (Expert) {
+            assignment = await Assignment.findOne({
+                _id: assignmentId,
+                studentId: req.userId
+            }).populate({
+                path: 'bids.expertId',
+                select: 'name username email',
+                model: Expert
+            });
+        } else {
+            assignment = await Assignment.findOne({
+                _id: assignmentId,
+                studentId: req.userId
+            });
+        }
         
         if (!assignment) {
             return res.status(404).json({ error: "Assignment not found or unauthorized" });
@@ -221,6 +295,7 @@ router.get('/assignments/:id/bids', authMiddleware, async (req, res) => {
 });
 
 // POST /api/student/assignments/:id/accept-bid/:bidId - Accept a specific bid
+// Update the accept-bid route to properly set the status and notify the expert
 router.post('/assignments/:id/accept-bid/:bidId', authMiddleware, async (req, res) => {
     try {
         const { id: assignmentId, bidId } = req.params;
@@ -230,7 +305,7 @@ router.post('/assignments/:id/accept-bid/:bidId', authMiddleware, async (req, re
         const assignment = await Assignment.findOne({
             _id: assignmentId,
             studentId: req.userId,
-            status: 'pending' // Only pending assignments can have bids accepted
+            status: ASSIGNMENT_STATUS.PENDING // Only pending assignments can have bids accepted
         });
         
         if (!assignment) {
@@ -246,11 +321,13 @@ router.post('/assignments/:id/accept-bid/:bidId', authMiddleware, async (req, re
         }
         
         // Update assignment status and assign to expert
-        assignment.status = 'assigned';
+        assignment.status = ASSIGNMENT_STATUS.IN_PROGRESS;
         assignment.expertId = bid.expertId;
-        assignment.acceptedBidId = bidId;
+        assignment.acceptedBid = bidId;
         
         await assignment.save();
+        
+        // TODO: Add notification logic here (could be email, in-app notification, etc.)
         
         console.log('Bid accepted successfully');
         res.json({ 
@@ -263,6 +340,54 @@ router.post('/assignments/:id/accept-bid/:bidId', authMiddleware, async (req, re
             return res.status(400).json({ error: 'Invalid ID format' });
         }
         res.status(500).json({ error: "Failed to accept bid" });
+    }
+});
+
+// Add a route for reviewing submissions
+router.post('/assignments/:id/review', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { action } = req.body;
+        
+        if (!['approve', 'revision'].includes(action)) {
+            return res.status(400).json({ error: 'Invalid action. Must be either "approve" or "revision".' });
+        }
+        
+        // Find the assignment and verify it belongs to this student
+        const assignment = await Assignment.findOne({
+            _id: id,
+            studentId: req.userId,
+            status: ASSIGNMENT_STATUS.SUBMITTED // Only submitted assignments can be reviewed
+        });
+        
+        if (!assignment) {
+            return res.status(404).json({ 
+                error: "Assignment not found, unauthorized, or not in submitted status" 
+            });
+        }
+        
+        // Update assignment status based on action
+        if (action === 'approve') {
+            assignment.status = ASSIGNMENT_STATUS.COMPLETED;
+            assignment.completionDate = new Date();
+        } else {
+            assignment.status = ASSIGNMENT_STATUS.IN_PROGRESS;
+        }
+        
+        await assignment.save();
+        
+        // TODO: Add notification logic here (could be email, in-app notification, etc.)
+        
+        res.json({ 
+            message: action === 'approve' ? "Assignment approved successfully" : "Revision requested successfully",
+            assignment
+        });
+    } catch (error) {
+        console.error('Error reviewing submission:', error);
+        if (error.name === 'CastError') {
+            return res.status(400).json({ error: 'Invalid assignment ID format' });
+        }
+        res.status(500).json({ error: "Failed to process review" });
     }
 });
 
@@ -303,11 +428,17 @@ router.post('/assignments/:id/reject-bid/:bidId', authMiddleware, async (req, re
 // GET /api/student/assignments/:id/expert-document
 router.get('/assignments/:id/expert-document', authMiddleware, async (req, res) => {
     try {
-        const assignment = await Assignment.findById(req.params.id)
-            .populate({
-                path: 'expertId',
-                select: 'name username email expertise rating'
-            });
+        let assignment;
+        if (Expert) {
+            assignment = await Assignment.findById(req.params.id)
+                .populate({
+                    path: 'expertId',
+                    select: 'name username email expertise rating',
+                    model: Expert
+                });
+        } else {
+            assignment = await Assignment.findById(req.params.id);
+        }
 
         if (!assignment) {
             return res.status(404).json({ error: 'Assignment not found' });

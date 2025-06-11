@@ -193,8 +193,17 @@ const AssignmentBids = () => {
                     <div className="bids-unavailable">
                         <p>
                             This assignment is no longer accepting bids as it has been {assignment.status}.
-                            {assignment.status === 'assigned' && assignment.expertId && (
-                                <span> An expert has been assigned to work on this assignment.</span>
+                            {assignment.acceptedBidId && assignment.acceptedBidId.expertId && (
+                                <>
+                                    <span> An expert has been assigned to work on this assignment.</span>
+                                    <div className="accepted-expert-details">
+                                        <h4>Assigned Expert:</h4>
+                                        <p><strong>Name:</strong> {assignment.acceptedBidId.expertId.name || assignment.acceptedBidId.expertId.username}</p>
+                                        <p><strong>Bid Amount:</strong> ${assignment.acceptedBidId.amount}</p>
+                                        {/* You can add more expert details here if they are populated */}
+                                        {/* <p><strong>Expert Email:</strong> {assignment.acceptedBidId.expertId.email}</p> */}
+                                    </div>
+                                </>
                             )}
                         </p>
                     </div>

@@ -1,41 +1,16 @@
 const mongoose = require('mongoose');
 
 const expertSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, 'Name is required']
-    },
-    email: {
-        type: String,
-        required: [true, 'Email is required'],
-        unique: true,
-        lowercase: true
-    },
-    username: {
-        type: String,
-        required: [true, 'Username is required'],
-        unique: true
-    },
-    password: {
-        type: String,
-        required: [true, 'Password is required']
-    },
-    bio: {
-        type: String
-      },
-      expertise: {
-        type: [String]
-      },
-      education: {
-        type: String
-      },
-      experience: {
-        type: String
-      },
-      date: {
-        type: Date,
-        default: Date.now
-      }
-    });
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    bio: String,
+    expertise: [String],
+    education: String,
+    experience: String,
+    rating: { type: Number, default: 0, min: 0, max: 5 },
+    date: { type: Date, default: Date.now }
+});
 
-module.exports = mongoose.model('experts', expertSchema); 
+module.exports = mongoose.model('Expert', expertSchema);

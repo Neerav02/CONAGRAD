@@ -20,6 +20,14 @@ const BidSchema = new mongoose.Schema({
     }
 });
 
+// Define status enum values as a constant
+const ASSIGNMENT_STATUS = {
+    PENDING: 'pending',
+    IN_PROGRESS: 'in_progress',
+    SUBMITTED: 'submitted',
+    COMPLETED: 'completed'
+};
+
 const AssignmentSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: String,
@@ -29,8 +37,8 @@ const AssignmentSchema = new mongoose.Schema({
     fileSize: Number,
     status: {
         type: String,
-        enum: ['pending', 'completed', 'assigned'],
-        default: 'pending'
+        enum: Object.values(ASSIGNMENT_STATUS),
+        default: ASSIGNMENT_STATUS.PENDING
     },
     submittedDate: {
         type: Date,
@@ -58,9 +66,41 @@ const AssignmentSchema = new mongoose.Schema({
             default: Date.now
         }
     },
+    acceptedBidId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Bid',
+        default: null
+    },
+    submission: {
+        fileUrl: String,
+        note: String,
+        fileName: String,
+        fileSize: Number,
+        submittedAt: Date,
+        expertId: { type: mongoose.Schema.Types.ObjectId, ref: 'Expert' }
+    },
     expertMessage: String,
     completionDate: Date,
-    bids: [BidSchema]
+    bids: [BidSchema],
+    budget: {
+        type: Number,
+        required: true,
+        min: 12, // Ensure budget is at least $12
+    },
 });
 
-module.exports = mongoose.model('Assignment', AssignmentSchema);
+// Add a pre-save middleware to ensure status is valid
+AssignmentSchema.pre('save', function(next) {
+    if (!Object.values(ASSIGNMENT_STATUS).includes(this.status)) {
+        this.status = ASSIGNMENT_STATUS.PENDING;
+    }
+    next();
+});
+
+const Assignment = mongoose.model('Assignment', AssignmentSchema);
+
+// Export both the model and the status enum
+module.exports = {
+    Assignment,
+    ASSIGNMENT_STATUS
+};

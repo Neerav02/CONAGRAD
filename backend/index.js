@@ -7,7 +7,8 @@ const errorHandler = require("./middleware/errorHandler");
 const jwt = require('jsonwebtoken');
 const authMiddleware = require("./middleware/auth");
 require('dotenv').config();
-const studentRoutes = require('./routes/student');
+const studentRoutes = require('./Routes/student');
+const { Assignment, ASSIGNMENT_STATUS } = require('./Models/Assignment');
 
 const app = express();
 const PORT = 4000;
@@ -58,7 +59,6 @@ const upload = multer({ storage: storage });
 app.use('/uploads', express.static('uploads'));
 
 // Import Models
-const Assignment = require('./Models/Assignment');
 const Student = require('./Models/Student');
 const Expert = require('./Models/Expert');
 
@@ -413,7 +413,7 @@ const addTestData = async () => {
                 subject: "Computer Science",
                 studentName: "John Doe",
                 dueDate: new Date("2025-03-20"),
-                status: "pending"
+                status: ASSIGNMENT_STATUS.PENDING
             });
             await testAssignment.save();
             console.log('Test data added successfully');
@@ -502,7 +502,7 @@ app.post('/api/assignments/upload', authMiddleware, upload.single('file'), async
             fileName: req.file.originalname,
             fileType: req.file.mimetype,
             studentId: req.userId,
-            status: 'pending',
+            status: ASSIGNMENT_STATUS.PENDING,
             submittedDate: new Date()
         });
         

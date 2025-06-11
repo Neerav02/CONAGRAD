@@ -1,26 +1,53 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import StudentAuth from "./components/studentAuth";
-import ExpertAuth from "./components/expertAuth";
-import ExpertDashboard from "./components/ExpertDashboard";
+import "./styles/App.css";
 import StudentDashboard from "./components/StudentDashboard";
 import AssignmentDetails from './components/AssignmentDetails';
 import AssignmentHistory from "./components/AssignmentHistory";
 import Profile from "./components/Profile";
 import Settings from "./components/Settings";
 import Help from "./components/Help";
-// Change this line at the top of your file
-import StudentUpload from "./components/StudentUpload";  // Remove the comment
-import YourWork from "./components/YourWork";
-import ExpertProfile from "./components/ExpertProfile";
-import "./styles/App.css";
-import Services from './components/Services';
-import About from './components/About';
-import Contact from './components/Contact';
+import About from "./components/About";
+import Services from "./components/Services";
+import Contact from "./components/Contact";
+import StudentAuth from "./components/studentAuth";
+import ExpertAuth from "./components/expertAuth";
+import ExpertDashboard from "./components/ExpertPages/ExpertDashboard/ExpertDashboard";
+import YourWork from "./components/ExpertPages/YourWork/YourWork";
+import ExpertProfile from "./components/ExpertPages/ExpertProfile/ExpertProfile";
+import StudentUpload from "./components/StudentUpload";
+import AssignmentBids from './components/AssignmentBids';
 
+function App() {    
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/student-login" element={<StudentAuth />} />
+        <Route path="/expert-login" element={<ExpertAuth />} />
+        <Route path="/expert-dashboard" element={<ExpertDashboard />} />
+        <Route path="/expert-profile" element={<ExpertProfile />} />
+        <Route path="/your-work" element={<YourWork />} />
+        <Route path="/dashboard" element={<StudentDashboard />} />
+        <Route path="/assignment/:id" element={<AssignmentDetails />} />
+        <Route path="/assignments" element={<AssignmentHistory />} />
+        <Route path="/history" element={<AssignmentHistory />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/help" element={<Help />} />
+        <Route path="/student-upload" element={<StudentUpload />} />
+        {/* Fixed: Added proper JSX comment syntax */}
+        <Route path="/assignments/:id/bids" element={<AssignmentBids />} />
+      </Routes>
+    </Router>
+  );
+}
 
 // import PendingAssignments from "./components/pendingAssignment";
-// // import Navbar from "./components/Navbar";
+// import Navbar from "./components/Navbar";
 // import AssignedAssignments from "./components/AssignedAssignment";
 // import History from "./components/history";
 
@@ -62,29 +89,4 @@ function Home() {
   );
 }
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/student-login" element={<StudentAuth />} />
-        <Route path="/expert-login" element={<ExpertAuth />} />
-        <Route path="/expert-dashboard" element={<ExpertDashboard />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/student-upload" element={<StudentUpload />} />
-        <Route path="/your-work" element={<YourWork />} />
-        <Route path="/assignments" element={<AssignmentDetails />} />
-        <Route path="/dashboard" element={<StudentDashboard />} />
-        <Route path="/student-dashboard" element={<StudentDashboard />} />
-        <Route path="/assignment-details" element={<AssignmentDetails />} />
-        <Route path="/assignment-history" element={<AssignmentHistory />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/help" element={<Help />} />
-      </Routes>
-    </Router>
-  );
-}
 export default App;

@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { axiosInstance } from '../config/api';
 import { FaUser, FaDollarSign, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import './BidsList.css';
+
+// Define API_ENDPOINTS if not imported from elsewhere
+const API_ENDPOINTS = {
+    ACCEPT_BID: (assignmentId, bidId) => `/student/assignments/${assignmentId}/accept-bid/${bidId}`
+};
 
 const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
     const [bids, setBids] = useState(initialBids);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState(''); // Added missing success state
     const [expandedBids, setExpandedBids] = useState(new Set());
     const [processingBids, setProcessingBids] = useState(new Set());
+    
+    const navigate = useNavigate(); // Added missing navigate hook
 
     useEffect(() => {
         if (initialBids.length === 0) {
@@ -49,23 +58,41 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
     };
 
     const handleAcceptBid = async (bidId) => {
+        setProcessingBids((prev) => new Set([...prev, bidId]));
+        setError(''); // Clear any previous errors
+        setSuccess(''); // Clear any previous success messages
+        
         try {
-            setProcessingBids(prev => new Set(prev).add(bidId));
-            
             const response = await axiosInstance.post(
-                `/student/assignments/${assignmentId}/accept-bid/${bidId}`
+                API_ENDPOINTS.ACCEPT_BID(assignmentId, bidId)
             );
             
-            // Call parent callback with updated assignment
+            setSuccess(`Bid accepted successfully! The expert has been notified.`);
+            
+            // Update local state to reflect the change
+            const acceptedBid = bids.find(bid => bid._id === bidId);
+            if (acceptedBid && acceptedBid.expertId) {
+                // Store expert details in localStorage for persistence
+                localStorage.setItem(`assignment_${assignmentId}_expert`, JSON.stringify({
+                    id: acceptedBid.expertId._id,
+                    name: acceptedBid.expertId.name || acceptedBid.expertId.username,
+                    email: acceptedBid.expertId.email
+                }));
+            }
+            
+            // Notify parent component
             if (onBidAccepted) {
                 onBidAccepted(response.data.assignment);
             }
             
+            // Redirect to assignment details page after short delay
+            setTimeout(() => {
+                navigate(`/assignment/${assignmentId}`);
+            }, 2000);
         } catch (error) {
-            console.error('Error accepting bid:', error);
-            alert(error.response?.data?.error || 'Failed to accept bid. Please try again.');
+            setError(error.response?.data?.error || 'Failed to accept bid. Please try again.');
         } finally {
-            setProcessingBids(prev => {
+            setProcessingBids((prev) => {
                 const newSet = new Set(prev);
                 newSet.delete(bidId);
                 return newSet;
@@ -138,7 +165,13 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
                     <button onClick={fetchBids}>Retry</button>
                 </div>
             )}
-
+            
+            {success && (
+                <div className="bids-success">
+                    <span>{success}</span>
+                </div>
+            )}
+            
             {bids.length === 0 ? (
                 <div className="no-bids">
                     <p>No bids have been submitted for this assignment yet.</p>
