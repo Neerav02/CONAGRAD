@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import StudentAuth from "./components/studentAuth";
 import ExpertAuth from "./components/expertAuth";
-import ExpertDashboard from "./components/ExpertDashboard";
+import ExpertDashboard from "./ExpertPages/ExpertDashboard/ExpertDashboard";
 import StudentDashboard from "./components/StudentDashboard";
 import AssignmentDetails from "./components/AssignmentDetails";
 import AssignmentHistory from "./components/AssignmentHistory";
@@ -10,8 +10,8 @@ import Settings from "./components/Settings";
 import Help from "./components/Help";
 // Change this line at the top of your file
 import StudentUpload from "./components/StudentUpload";  // Remove the comment
-import YourWork from "./components/YourWork";
-import ExpertProfile from "./components/ExpertProfile";
+import YourWork from "./ExpertPages/YourWork/YourWork";
+import ExpertProfile from "./ExpertPages/ExpertProfile/ExpertProfile";
 import "./styles/App.css";
 import Services from './components/Services';
 import About from './components/About';
