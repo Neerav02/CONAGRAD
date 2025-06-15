@@ -166,7 +166,7 @@ router.post('/upload-assignment', authMiddleware, upload.single('file'), handleM
         console.log('File received:', req.file);
         console.log('Request body:', req.body);
 
-        const { title, description, subject, dueDate } = req.body;
+        const { title, description, subject, dueDate, budget } = req.body;
 
         if (!title) {
             return res.status(400).json({ error: "Title is required" });
@@ -181,6 +181,7 @@ router.post('/upload-assignment', authMiddleware, upload.single('file'), handleM
             fileName: req.file.originalname,
             fileType: req.file.mimetype,
             fileSize: req.file.size,
+            budget: Number(budget),
             dueDate: dueDate ? new Date(dueDate) : new Date(),
             status: ASSIGNMENT_STATUS.PENDING,
             submittedDate: new Date(),
