@@ -1,0 +1,250 @@
+.expert-public-profile-page {
+  max-width: 420px;
+  margin: 4rem auto;
+  background: #fafdff;
+  border-radius: 18px;
+  box-shadow: 0 8px 40px rgba(52, 152, 219, 0.13), 0 1.5px 6px rgba(0,0,0,0.04);
+  padding: 2.5rem 2rem 2rem 2rem;
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) both;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.expert-profile-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.expert-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3498db 60%, #1976d2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.1rem;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(52, 152, 219, 0.13);
+  overflow: hidden;
+}
+
+.expert-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.expert-avatar-initials {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.expert-profile-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1976d2;
+  letter-spacing: 0.5px;
+}
+
+.expert-profile-header .username {
+  color: #888;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-left: 2px;
+}
+
+.expert-rating-row {
+  display: flex;
+  gap: 1.1rem;
+  font-size: 1.08rem;
+  color: #1976d2;
+  margin-top: 0.2rem;
+  font-weight: 500;
+}
+
+.expert-rating {
+  color: #fbc02d;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.expert-completed, .expert-join-date {
+  color: #1976d2;
+  font-size: 1.01rem;
+}
+
+.expert-profile-details {
+  font-size: 1.08rem;
+  color: #222;
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
+}
+
+.expert-profile-details strong {
+  color: #3498db;
+  font-weight: 600;
+}
+
+.expert-profile-details a {
+  color: #1976d2;
+  text-decoration: underline;
+}
+
+.expert-profile-divider {
+  border: none;
+  border-top: 1.5px solid #e3e3e3;
+  margin: 1.5rem 0 1.2rem 0;
+}
+
+.expert-chat-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.expert-chat-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1976d2;
+  margin-bottom: 0.2rem;
+}
+
+.expert-chat-messages {
+  background: #f7fafd;
+  border-radius: 10px;
+  padding: 1rem 0.8rem;
+  min-height: 110px;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 1px 4px rgba(52, 152, 219, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.expert-chat-message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  animation: fadeInMsg 0.3s;
+}
+
+@keyframes fadeInMsg {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.expert-chat-message.you {
+  align-items: flex-end;
+}
+
+.expert-chat-bubble {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 0.5rem 1rem;
+  border-radius: 16px 16px 4px 16px;
+  font-size: 1rem;
+  margin-bottom: 2px;
+  max-width: 80%;
+  word-break: break-word;
+  box-shadow: 0 1px 2px rgba(52, 152, 219, 0.07);
+  transition: background 0.2s;
+}
+
+.expert-chat-message.you .expert-chat-bubble {
+  background: #d1e7dd;
+  color: #1b5e20;
+  border-radius: 16px 16px 16px 4px;
+  align-self: flex-end;
+}
+
+.expert-chat-sender {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 1px;
+}
+
+.expert-chat-input-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.expert-chat-input {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  border: 1.5px solid #bcdffb;
+  font-size: 1rem;
+  transition: border 0.2s;
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+}
+
+.expert-chat-input:focus {
+  border: 1.5px solid #3498db;
+  outline: none;
+  background: #f0f8ff;
+}
+
+.expert-chat-send-btn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(52, 152, 219, 0.09);
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+}
+
+.expert-chat-send-btn:hover {
+  background: #1976d2;
+}
+
+@media (max-width: 600px) {
+  .expert-public-profile-page {
+    max-width: 98vw;
+    padding: 1.2rem 0.5rem;
+  }
+  .expert-profile-header h2 {
+    font-size: 1.3rem;
+  }
+  .expert-profile-details {
+    font-size: 0.98rem;
+  }
+  .expert-chat-title {
+    font-size: 1rem;
+  }
+  .expert-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+} 

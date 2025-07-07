@@ -1,12 +1,19 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+<<<<<<< HEAD
 import "./styles/App.css";
 
+=======
+import StudentAuth from "./components/studentAuth";
+import ExpertAuth from "./components/expertAuth";
+import ExpertDashboard from "./ExpertPages/ExpertDashboard/ExpertDashboard";
+>>>>>>> f2912662c6fb006decd166a5adb6ee57edf1bf93
 import StudentDashboard from "./components/StudentDashboard";
 import AssignmentDetails from './components/AssignmentDetails';
 import AssignmentHistory from "./components/AssignmentHistory";
 import Profile from "./components/Profile";
 import Settings from "./components/Settings";
 import Help from "./components/Help";
+<<<<<<< HEAD
 import About from "./components/About";
 import Services from "./components/Services";
 import Contact from "./components/Contact";
@@ -18,6 +25,22 @@ import StudentUpload from "./components/StudentUpload";
 import AssignmentBids from './components/AssignmentBids';
 import ExpertPublicProfile from './components/ExpertPublicProfile';
 import YourWork from "./components/ExpertPages/YourWork/YourWork";
+=======
+// Change this line at the top of your file
+import StudentUpload from "./components/StudentUpload";  // Remove the comment
+import YourWork from "./ExpertPages/YourWork/YourWork";
+import ExpertProfile from "./ExpertPages/ExpertProfile/ExpertProfile";
+import "./styles/App.css";
+import Services from './components/Services';
+import About from './components/About';
+import Contact from './components/Contact';
+
+
+// import PendingAssignments from "./components/pendingAssignment";
+// // import Navbar from "./components/Navbar";
+// import AssignedAssignments from "./components/AssignedAssignment";
+// import History from "./components/history";
+>>>>>>> f2912662c6fb006decd166a5adb6ee57edf1bf93
 
 function Home() {
   return (
