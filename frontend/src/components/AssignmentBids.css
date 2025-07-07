@@ -62,7 +62,8 @@
 .assignment-description {
     margin: 0 0 15px 0;
     color: #555;
-    line-height: 1.6;
+    line-height: 0;
+    
 }
 
 .assignment-meta {

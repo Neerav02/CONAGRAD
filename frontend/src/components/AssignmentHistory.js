@@ -10,8 +10,6 @@ const AssignmentHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
-  const [selectedAssignment, setSelectedAssignment] = useState(null);
-  const [showDetails, setShowDetails] = useState(false);
   const [downloadingId, setDownloadingId] = useState(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const navigate = useNavigate();
@@ -158,14 +156,8 @@ const AssignmentHistory = () => {
     }
   };
 
-  const handleView = (assignment) => {
-    setSelectedAssignment(assignment);
-    setShowDetails(true);
-  };
-
-  const handleBack = () => {
-    setShowDetails(false);
-    setSelectedAssignment(null);
+  const handleViewDetails = (assignmentId) => {
+    navigate(`/assignment/${assignmentId}`);
   };
 
   const getStatusColor = (status) => {
@@ -228,8 +220,8 @@ const AssignmentHistory = () => {
           <div className="error-message">
             <p>{error}</p>
             <button onClick={() => setError('')}>Dismiss</button>
-            {error.includes('download') && selectedAssignment && (
-              <button onClick={() => handleDownload(selectedAssignment.fileUrl, selectedAssignment.fileName, selectedAssignment._id)}>
+            {error.includes('download') && (
+              <button onClick={() => handleDownload(selectedAssignment?.fileUrl, selectedAssignment?.fileName, selectedAssignment?._id)}>
                 Try Again
               </button>
             )}
@@ -248,49 +240,7 @@ const AssignmentHistory = () => {
           </div>
         )}
 
-        {showDetails ? (
-          <div className="assignment-details-view">
-            <button className="back-button" onClick={handleBack}>
-              <FaArrowLeft /> Back to Assignments
-            </button>
-            <div className="details-card">
-              <div className="details-header">
-                <h3>{selectedAssignment.title}</h3>
-                <div className={`status-badge ${getStatusColor(selectedAssignment.status)}`}>
-                  {selectedAssignment.status.charAt(0).toUpperCase() + selectedAssignment.status.slice(1)}
-                </div>
-              </div>
-              <div className="details-content">
-                <p>
-                  <strong>Description: </strong>
-                  {selectedAssignment.description}
-                </p>
-                <p>
-                  <strong>Submission Date: </strong>
-                  {new Date(selectedAssignment.submittedDate).toLocaleDateString()}
-                </p>
-                <p>
-                  <strong>File Information: </strong>
-                  {selectedAssignment.fileName} ({selectedAssignment.fileType}) - {Math.round(selectedAssignment.fileSize / 1024)} KB
-                </p>
-                <p>
-                  <strong>Status: </strong>
-                  {selectedAssignment.status.charAt(0).toUpperCase() + selectedAssignment.status.slice(1)}
-                </p>
-              </div>
-              <div className="details-actions">
-                <button 
-                  className={`download-button ${downloadingId === selectedAssignment._id ? 'downloading' : ''}`}
-                  onClick={() => handleDownload(selectedAssignment.fileUrl, selectedAssignment.fileName, selectedAssignment._id)}
-                  disabled={downloadingId === selectedAssignment._id}
-                >
-                  <FaDownload /> 
-                  {downloadingId === selectedAssignment._id ? 'Downloading...' : 'Download Assignment'}
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : filteredAssignments.length === 0 ? (
+        {filteredAssignments.length === 0 ? (
           <div className="no-assignments">
             <p>No {filter !== 'all' ? filter : ''} assignments found.</p>
           </div>
@@ -310,11 +260,10 @@ const AssignmentHistory = () => {
                     Submitted: {new Date(assignment.submittedDate).toLocaleDateString()}
                   </p>
                 </div>
-                {/* Inside the card-actions div in the assignments-grid section, add a View Bids button */}
                 <div className="card-actions">
                   <button 
                     className="view-button"
-                    onClick={() => handleView(assignment)}
+                    onClick={() => handleViewDetails(assignment._id)}
                   >
                     <FaEye /> View Details
                   </button>

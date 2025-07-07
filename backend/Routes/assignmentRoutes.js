@@ -35,56 +35,59 @@ router.post('/submit', upload.single('submissionFile'), async (req, res) => {
       if (!fileUrl) {
           return res.status(400).json({ error: 'Submission file is required.' });
       }
-
+  
       const assignment = await Assignment.findById(assignmentId);
       if (!assignment) {
         return res.status(404).json({ error: 'Assignment not found.' });
       }
-      
+  
       if (!assignment.expertId || assignment.expertId.toString() !== expertId || assignment.status !== 'in progress') {
         return res.status(403).json({ error: 'Unauthorized submission or assignment not ready for submission.' });
       }
-
+  
       assignment.submission = {
         fileUrl: `/uploads/${req.file.filename}`,
+        fileName: req.file.originalname,
+        fileSize: req.file.size,
+        fileType: req.file.mimetype,
         note: note || '',
         submittedAt: new Date(),
         expertId: expertId
       };
       
       assignment.status = 'submitted';
-
+  
       await assignment.save();
       res.json({ message: 'Work submitted successfully', assignment });
     } catch (error) {
       console.error('Error submitting work:', error);
       res.status(500).json({ error: error.message || 'Failed to submit work.' });
     }
-});
+  });
 
-router.post('/review', async (req, res) => {
-  try {
-    const { assignmentId, action } = req.body;
-
-    const assignment = await Assignment.findById(assignmentId);
-    if (!assignment || assignment.status !== 'submitted') {
-      return res.status(404).json({ error: 'Assignment not submitted yet' });
+  router.post('/review', async (req, res) => {
+    try {
+      const { assignmentId, action } = req.body;
+  
+      const assignment = await Assignment.findById(assignmentId);
+      if (!assignment || assignment.status !== 'submitted') {
+        return res.status(404).json({ error: 'Assignment not submitted yet' });
+      }
+  
+      if (action === 'approve') {
+        assignment.status = 'completed';
+      } else if (action === 'revision') {
+        assignment.status = 'in progress';
+      } else {
+        return res.status(400).json({ error: 'Invalid action' });
+      }
+  
+      await assignment.save();
+      res.json({ message: `Assignment ${action}d`, assignment });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
-
-    if (action === 'approve') {
-      assignment.status = 'completed';
-    } else if (action === 'revision') {
-      assignment.status = 'in progress';
-    } else {
-      return res.status(400).json({ error: 'Invalid action' });
-    }
-
-    await assignment.save();
-    res.json({ message: `Assignment ${action}d`, assignment });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+  });
 
 router.post('/create', upload.single('file'), async (req, res) => {
   try {

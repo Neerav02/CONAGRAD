@@ -3,6 +3,7 @@ const router = express.Router();
 const Expert = require('../Models/Expert');
 const auth = require('../middleware/auth');
 const jwt = require('jsonwebtoken');
+const expertController = require('../controllers/expertController');
 
 // Expert registration
 router.post("/register", async (req, res) => {
@@ -75,5 +76,8 @@ router.get("/profile", auth, async (req, res) => {
     res.status(500).json({ error: "Failed to fetch profile" });
   }
 });
+
+// Get public expert profile by ID
+router.get('/experts/:expertId', expertController.getExpertPublicProfile);
 
 module.exports = router;

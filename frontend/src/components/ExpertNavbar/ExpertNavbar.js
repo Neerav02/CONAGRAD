@@ -1,104 +1,65 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './ExpertNavbar.css';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './ExpertNavbar.css'; // Create this CSS file
 
 const ExpertNavbar = () => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
   const navigate = useNavigate();
-  const username = localStorage.getItem('expertUsername') || 'Expert';
-  const dropdownRef = useRef(null);
+  const [expertName, setExpertName] = useState(localStorage.getItem('expertName') || 'Expert');
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        showDropdown
-      ) {
-        setShowDropdown(false);
+    const fetchProfile = async () => {
+      const token = localStorage.getItem('expertToken');
+      try {
+        const res = await axios.get('/api/expert/profile', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setExpertName(res.data.name);
+      } catch (error) {
+        console.error('Error fetching expert profile:', error);
       }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showDropdown]);
+    fetchProfile();
+  }, []);
 
   const handleLogout = () => {
-    setLoggingOut(true);
-    setTimeout(() => {
-      localStorage.removeItem('expertToken');
-      localStorage.removeItem('expertUsername');
-      navigate('/expert-login');
-    }, 2000);
+    localStorage.removeItem('expertToken');
+    localStorage.removeItem('expertUsername');
+    localStorage.removeItem('expertName');
+    localStorage.removeItem('expertEmail');
+    localStorage.removeItem('expertId');
+    navigate('/expert-login');
   };
 
   return (
     <nav className="expert-navbar">
-      <div className="navbar-left">
-        <Link to="/" className="navbar-logo">
-          <img src="/Conagrad.jpg" alt="Logo" />
-        </Link>
+      <div className="navbar-brand">
+        <h2>CONAGRAD Expert</h2>
       </div>
-
-      <div className="navbar-right">
-        <Link to="/expert-dashboard" className="nav-link">
-          <i className="bx bx-home"></i>
-          Home
-        </Link>
-
-        <Link to="/expert-history" className="nav-link">
-          <i className="bx bx-history"></i>
-          History
-        </Link>
-
-        <Link to="/your-work" className="nav-link">
-          <i className="bx bx-briefcase"></i>
-          Your Work
-        </Link>
-
-        <div className="expertprofile-container">
-          <div 
-            className="profile-trigger"
-            onClick={() => setShowDropdown(!showDropdown)}
-          >
-            <img src="/default-profile.jpg" alt="Profile" className="profile-image" />
-            <span className="profile-name">{username}</span>
-          </div>
-
-          {showDropdown && (
-            <div className="profile-dropdown" ref={dropdownRef}>
-              <ul className="dropdown-menu">
-                <li>
-                  <Link to="/expert-profile" className="dropdown-item">
-                    <i className="bx bx-user"></i>
-                    Profile
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/expert-settings" className="dropdown-item">
-                    <i className="bx bx-cog"></i>
-                    Settings
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/help" className="dropdown-item">
-                    <i className="bx bx-help-circle"></i>
-                    Help
-                  </Link>
-                </li>
-                <li className="dropdown-divider"></li>
-                <li>
-                  <button onClick={handleLogout} className="dropdown-item" disabled={loggingOut}>
-                    <i className="bx bx-log-out"></i>
-                    {loggingOut ? 'Logging out...' : 'Logout'}
-                  </button>
-                </li>
-              </ul>
-            </div>
-          )}
-        </div>
+      <div className="navbar-menu">
+        <ul className="navbar-nav">
+          <li className="nav-item">
+            <button onClick={() => navigate('/expert-dashboard')} className="nav-link">
+              Dashboard
+            </button>
+          </li>
+          <li className="nav-item">
+            <button onClick={() => navigate('/your-work')} className="nav-link">
+              Your Work
+            </button>
+          </li>
+          <li className="nav-item">
+            <button onClick={() => navigate('/expert-profile')} className="nav-link">
+              Profile
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div className="navbar-user">
+        <span className="user-name">Welcome, {expertName}</span>
+        <button onClick={handleLogout} className="logout-btn">
+          Logout
+        </button>
       </div>
     </nav>
   );

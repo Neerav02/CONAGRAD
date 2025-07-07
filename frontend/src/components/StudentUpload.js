@@ -48,9 +48,12 @@ const StudentUpload = () => {
     if (e.target.files[0]) {
       const selectedFile = e.target.files[0];
       
-      // Validate file size (10MB limit)
-      if (selectedFile.size > 10 * 1024 * 1024) {
-        setError('File size should not exceed 10MB');
+      // Validate file size (100MB limit)
+      const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB in bytes
+      if (selectedFile.size > MAX_FILE_SIZE) {
+        setError(`File size should not exceed ${MAX_FILE_SIZE / (1024 * 1024)} MB`);
+        setFile(null); // Clear the selected file if it's too large
+        setFileName('No file selected');
         return;
       }
       
@@ -94,9 +97,10 @@ const StudentUpload = () => {
       return;
     }
 
-    // Validate file size (100 MB = 100 * 1024 * 1024 bytes)
-    if (file && file.size < 100 * 1024 * 1024) {
-      setError('File size must be at least 100 MB.');
+    // Validate file size (Max 100 MB)
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB in bytes
+    if (file && file.size > MAX_FILE_SIZE) {
+      setError(`File size cannot exceed ${MAX_FILE_SIZE / (1024 * 1024)} MB.`);
       return;
     }
 

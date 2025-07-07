@@ -6,18 +6,19 @@ import './BidsList.css';
 
 // Define API_ENDPOINTS if not imported from elsewhere
 const API_ENDPOINTS = {
-    ACCEPT_BID: (assignmentId, bidId) => `/student/assignments/${assignmentId}/accept-bid/${bidId}`
+    ACCEPT_BID: (assignmentId, bidId) => `/student/assignments/${assignmentId}/accept-bid/${bidId}`,
+    REJECT_BID: (assignmentId, bidId) => `/student/assignments/${assignmentId}/reject-bid/${bidId}`,
 };
 
 const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
     const [bids, setBids] = useState(initialBids);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState(''); // Added missing success state
+    const [success, setSuccess] = useState('');
     const [expandedBids, setExpandedBids] = useState(new Set());
     const [processingBids, setProcessingBids] = useState(new Set());
     
-    const navigate = useNavigate(); // Added missing navigate hook
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (initialBids.length === 0) {
@@ -59,8 +60,8 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
 
     const handleAcceptBid = async (bidId) => {
         setProcessingBids((prev) => new Set([...prev, bidId]));
-        setError(''); // Clear any previous errors
-        setSuccess(''); // Clear any previous success messages
+        setError('');
+        setSuccess('');
         
         try {
             const response = await axiosInstance.post(
@@ -69,26 +70,11 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
             
             setSuccess(`Bid accepted successfully! The expert has been notified.`);
             
-            // Update local state to reflect the change
-            const acceptedBid = bids.find(bid => bid._id === bidId);
-            if (acceptedBid && acceptedBid.expertId) {
-                // Store expert details in localStorage for persistence
-                localStorage.setItem(`assignment_${assignmentId}_expert`, JSON.stringify({
-                    id: acceptedBid.expertId._id,
-                    name: acceptedBid.expertId.name || acceptedBid.expertId.username,
-                    email: acceptedBid.expertId.email
-                }));
-            }
-            
-            // Notify parent component
             if (onBidAccepted) {
-                onBidAccepted(response.data.assignment);
+                onBidAccepted(response.data.assignment); // Notify parent with updated assignment
             }
             
-            // Redirect to assignment details page after short delay
-            setTimeout(() => {
-                navigate(`/assignment/${assignmentId}`);
-            }, 2000);
+            // No redirect here, let parent component handle based on updated assignment status
         } catch (error) {
             setError(error.response?.data?.error || 'Failed to accept bid. Please try again.');
         } finally {
@@ -108,7 +94,7 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
         try {
             setProcessingBids(prev => new Set(prev).add(bidId));
             
-            await axiosInstance.post(`/student/assignments/${assignmentId}/reject-bid/${bidId}`);
+            await axiosInstance.post(API_ENDPOINTS.REJECT_BID(assignmentId, bidId));
             
             // Remove the rejected bid from the list
             setBids(prevBids => prevBids.filter(bid => bid._id !== bidId));
@@ -120,9 +106,11 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
                 return newSet;
             });
             
+            setSuccess('Bid rejected successfully.');
+
         } catch (error) {
             console.error('Error rejecting bid:', error);
-            alert(error.response?.data?.error || 'Failed to reject bid. Please try again.');
+            setError(error.response?.data?.error || 'Failed to reject bid. Please try again.');
         } finally {
             setProcessingBids(prev => {
                 const newSet = new Set(prev);
@@ -141,6 +129,12 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
 
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleString();
+    };
+
+    const handleExpertProfileClick = (expertId) => {
+        if (expertId) {
+            navigate(`/profile/${expertId}`);
+        }
     };
 
     if (loading) {
@@ -193,7 +187,10 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
                                 )}
                                 
                                 <div className="bid-header">
-                                    <div className="expert-info">
+                                    <div 
+                                        className="expert-info clickable" 
+                                        onClick={() => handleExpertProfileClick(bid.expertId?._id)}
+                                    >
                                         <FaUser />
                                         <span>
                                             {bid.expertId?.name || bid.expertId?.username || 'Expert'}
@@ -207,13 +204,13 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
 
                                 <div className="bid-preview">
                                     <p>
-                                        {bid.proposal?.length > 150 
-                                            ? `${bid.proposal.substring(0, 150)}...`
-                                            : bid.proposal
+                                        {bid.message?.length > 150 
+                                            ? `${bid.message.substring(0, 150)}...`
+                                            : bid.message
                                         }
                                     </p>
                                     
-                                    {bid.proposal?.length > 150 && (
+                                    {bid.message?.length > 150 && (
                                         <button 
                                             className="view-details-btn"
                                             onClick={() => toggleBidDetails(bid._id)}
@@ -223,20 +220,17 @@ const BidsList = ({ assignmentId, onBidAccepted, initialBids = [] }) => {
                                     )}
                                 </div>
 
-                                {isExpanded && bid.proposal?.length > 150 && (
-                                    <div className="bid-details">
-                                        <p>{bid.proposal}</p>
-                                    </div>
-                                )}
-
-                                {bid.timeline && (
-                                    <div className="bid-timeline">
-                                        <strong>Estimated Timeline:</strong> {bid.timeline}
+                                {isExpanded && (
+                                    <div className="bid-details-expanded">
+                                        <p><strong>Full Proposal:</strong> {bid.message}</p>
+                                        {bid.timeline && (
+                                            <p><strong>Estimated Timeline:</strong> {bid.timeline}</p>
+                                        )}
                                     </div>
                                 )}
 
                                 <div className="bid-timestamp">
-                                    Submitted on {formatDate(bid.submittedAt || bid.createdAt)}
+                                    Submitted on {formatDate(bid.timestamp)}
                                 </div>
 
                                 <div className="bid-actions">

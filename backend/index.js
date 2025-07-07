@@ -62,7 +62,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
 }));
 
 // FIXED: Mount expert routes BEFORE other conflicting routes
-app.use('/expert', expertRoutes);
+app.use('/api/expert', expertRoutes);
 app.use('/api/student', studentRoutes);
 
 // Import Models

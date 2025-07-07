@@ -10,9 +10,6 @@ const reviewRoutes = require('./Routes/reviewRoutes');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static file serving for uploads
-app.use('/api/uploads', express.static('uploads'));
-
 // Route registrations
 app.use('/api/student', studentRoutes);
 app.use('/api/auth', authRoutes);
